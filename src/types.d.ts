@@ -40,3 +40,10 @@ export type Profile = {
    id: string
    group: string
 }
+
+export type Product = {
+   id: number
+   name: string
+   image: string | null
+   price: number
+}
