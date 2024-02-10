@@ -1,13 +1,10 @@
 import products from "@/assets/data/products"
 import ProductLisstItem from "@/src/components/ProductListItem"
-import { Stack } from "expo-router"
 import { FlatList, StyleSheet } from "react-native"
 
 export default function MenuScreen() {
    return (
       <>
-         <Stack.Screen options={{ title: "Menu" }} />
-
          <FlatList
             data={products}
             renderItem={({ item }) => <ProductLisstItem product={item} />}
