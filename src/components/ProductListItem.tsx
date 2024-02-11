@@ -1,6 +1,6 @@
 import { Text } from "@/src/components/Themed"
 import Colors from "@/src/constants/Colors"
-import { Link } from "expo-router"
+import { Link, useSegments } from "expo-router"
 import { Image, Pressable, StyleSheet } from "react-native"
 import { Product } from "../types"
 
@@ -12,8 +12,14 @@ interface Props {
 }
 
 export default function ProductLisstItem({ product }: Props) {
+   const segments = useSegments()
+
    return (
-      <Link href={`/(tabs)/menu/${product.id}`} asChild>
+      <Link
+         // unknown error here, set as to remove ite
+         href={`/${segments[0]}/menu/${product.id}` as `${string}:${string}`}
+         asChild
+      >
          <Pressable style={styles.container}>
             <Image
                source={{ uri: product.image || defaultPizaImage }}

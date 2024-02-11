@@ -9,7 +9,7 @@ export default function TabTwoScreen() {
          <View
             style={styles.separator}
          />
-         <EditScreenInfo path="app/(tabs)/two.tsx" />
+         <EditScreenInfo path="app/(user)/two.tsx" />
       </View>
    )
 }

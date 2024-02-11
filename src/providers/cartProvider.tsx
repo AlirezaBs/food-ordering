@@ -28,7 +28,7 @@ export const useCartContext = (): CartContextType => {
 export function CartProvider({ children }: PropsWithChildren) {
    const [items, setItems] = useState<CartItem[]>([])
 
-   let total = items.reduce(
+   const total = items.reduce(
       (sum, item) => (sum += item.product.price * item.quantity),
       0
    )

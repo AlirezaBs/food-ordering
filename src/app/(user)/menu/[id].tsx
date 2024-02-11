@@ -64,7 +64,7 @@ export default function ProductDetailScreen() {
             ))}
          </View>
 
-         <Text>${product.price}</Text>
+         <Text style={styles.price}>${product.price}</Text>
          <Button onPress={addToCart} text="Add to Cart" />
       </View>
    )

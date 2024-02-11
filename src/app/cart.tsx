@@ -20,7 +20,7 @@ export default function CartScreen() {
 
          <View style={{ marginTop: "auto" }}>
             <Text style={{ fontSize: 20, fontWeight: "500" }}>
-               total = ${total}
+               total = ${total.toFixed()}
             </Text>
             <Button text="Checkout" />
          </View>
