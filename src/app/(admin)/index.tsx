@@ -1,5 +1,8 @@
-import { Redirect } from "expo-router"
+import { Redirect } from 'expo-router'
+import React from 'react'
 
-export default function IndexScreen() {
-   return <Redirect href={"/(admin)/menu"} />
+export default function Index() {
+  return (
+    <Redirect href={'/(admin)/menu'} />
+  )
 }
