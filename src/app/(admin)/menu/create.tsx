@@ -2,15 +2,25 @@ import { defaultPizaImage } from "@/src/components/ProductListItem"
 import Button from "@/src/components/button"
 import Colors from "@/src/constants/Colors"
 import * as ImagePicker from "expo-image-picker"
-import { Stack } from "expo-router"
+import { Stack, useLocalSearchParams } from "expo-router"
 import React, { useState } from "react"
-import { Image, ScrollView, StyleSheet, Text, TextInput } from "react-native"
+import {
+	Alert,
+	Image,
+	ScrollView,
+	StyleSheet,
+	Text,
+	TextInput,
+} from "react-native"
 
 export default function CreateProductScreen() {
    const [image, setImage] = useState<string | null>(null)
    const [name, setName] = useState("")
    const [price, setPrice] = useState("")
    const [error, setError] = useState("")
+
+   const { id } = useLocalSearchParams()
+   const isUpdating = !!id
 
    const resetFields = () => {
       setName("")
@@ -52,6 +62,25 @@ export default function CreateProductScreen() {
       }
    }
 
+   const onDeleteProduct = () => {
+      console.warn("DELETING!!!!")
+   }
+
+   const confirmDelete = () => {
+      Alert.alert("Confirm", "Are you sure you want to delete this product?", [
+         {
+            text: "Cancel",
+         },
+         {
+            text: "Delete",
+            style: "destructive",
+            onPress: onDeleteProduct,
+         },
+      ])
+   }
+
+   const onSubmit = () => (isUpdating ? onUpdate() : onCreate())
+
    const onCreate = () => {
       if (!validateInput()) return
       console.log("creating")
@@ -61,9 +90,22 @@ export default function CreateProductScreen() {
       resetFields()
    }
 
+   const onUpdate = () => {
+      if (!validateInput()) return
+      console.log("updating")
+
+      // save in the database
+
+      resetFields()
+   }
+
    return (
       <ScrollView style={styles.container}>
-         <Stack.Screen options={{ title: "Create Product" }} />
+         <Stack.Screen
+            options={{
+               title: isUpdating ? "Update Product" : "Create Product",
+            }}
+         />
 
          <Image
             source={{ uri: image || defaultPizaImage }}
@@ -91,7 +133,15 @@ export default function CreateProductScreen() {
          />
 
          <Text style={{ color: "red" }}>{error}</Text>
-         <Button text="Create" onPress={onCreate} />
+         <Button text={isUpdating ? "Update" : "Create"} onPress={onSubmit} />
+         {isUpdating ? (
+            <Text
+               onPress={confirmDelete}
+               style={[styles.selectImage, { color: "red" }]}
+            >
+               Delete Product
+            </Text>
+         ) : null}
       </ScrollView>
    )
 }
