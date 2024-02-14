@@ -2,7 +2,7 @@ import products from "@/assets/data/products"
 import ProductLisstItem from "@/src/components/ProductListItem"
 import { FlatList, StyleSheet } from "react-native"
 
-export default function MenuScreen() {
+export default function MenuScreen() {   
    return (
       <>
          <FlatList

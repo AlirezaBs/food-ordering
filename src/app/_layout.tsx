@@ -10,6 +10,7 @@ import * as SplashScreen from "expo-splash-screen"
 import { useEffect } from "react"
 
 import { useColorScheme } from "@/src/components/useColorScheme"
+import AuthProvider, { useAuthContext } from "../providers/authProvider"
 import { CartProvider } from "../providers/cartProvider"
 
 export {
@@ -26,6 +27,16 @@ export const unstable_settings = {
 SplashScreen.preventAutoHideAsync()
 
 export default function RootLayout() {
+   return (
+      <AuthProvider>
+         <RootLayoutNav />
+      </AuthProvider>
+   )
+}
+
+function RootLayoutNav() {
+   const colorScheme = useColorScheme()
+   const { loading } = useAuthContext()
    const [loaded, error] = useFonts({
       SpaceMono: require("../../assets/fonts/SpaceMono-Regular.ttf"),
       ...FontAwesome.font,
@@ -37,20 +48,14 @@ export default function RootLayout() {
    }, [error])
 
    useEffect(() => {
-      if (loaded) {
+      if (loaded && !loading) {
          SplashScreen.hideAsync()
       }
-   }, [loaded])
+   }, [loaded, loading])
 
    if (!loaded) {
       return null
    }
-
-   return <RootLayoutNav />
-}
-
-function RootLayoutNav() {
-   const colorScheme = useColorScheme()
 
    return (
       <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
