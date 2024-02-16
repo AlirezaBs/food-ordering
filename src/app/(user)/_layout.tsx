@@ -30,11 +30,8 @@ export default function TabLayout() {
             headerShown: useClientOnlyValue(false, true),
             tabBarStyle: { paddingBottom: 3 },
          }}
+         initialRouteName="menu"
       >
-         <Tabs.Screen
-            name="index"
-            options={{ href: null, headerShown: false }}
-         />
          <Tabs.Screen
             name="menu"
             options={{

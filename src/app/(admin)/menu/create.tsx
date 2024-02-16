@@ -1,30 +1,84 @@
+import {
+   useDeleteProduct,
+   useInsertProduct,
+   useProduct,
+   useUpdateProduct,
+} from "@/src/api/products"
 import { defaultPizaImage } from "@/src/components/ProductListItem"
 import Button from "@/src/components/button"
 import Colors from "@/src/constants/Colors"
 import * as ImagePicker from "expo-image-picker"
-import { Stack, useLocalSearchParams } from "expo-router"
-import React, { useState } from "react"
+import { Stack, useLocalSearchParams, useRouter } from "expo-router"
+import React, { useEffect, useState } from "react"
 import {
-	Alert,
-	Image,
-	ScrollView,
-	StyleSheet,
-	Text,
-	TextInput,
+   Alert,
+   Image,
+   ScrollView,
+   StyleSheet,
+   Text,
+   TextInput,
 } from "react-native"
 
 export default function CreateProductScreen() {
+   const router = useRouter()
+   const { id: idString } = useLocalSearchParams()
+   const id = parseFloat(
+      typeof idString === "string" ? idString : idString?.[0]
+   )
+   const isUpdating = !!id
+
    const [image, setImage] = useState<string | null>(null)
    const [name, setName] = useState("")
    const [price, setPrice] = useState("")
    const [error, setError] = useState("")
 
-   const { id } = useLocalSearchParams()
-   const isUpdating = !!id
+   const { mutate: insertProductMutation, isPending: isInsertPending } =
+      useInsertProduct()
+   const { mutate: updateProductMutation, isPending: isUpdatePending } =
+      useUpdateProduct()
+   const { data: updatingProduct } = useProduct(id)
+   const { mutate: deleteProductMutation, isPending: isDeletePending } =
+      useDeleteProduct()
+
+   useEffect(() => {
+      if (updatingProduct) {
+         setImage(updatingProduct.image)
+         setName(updatingProduct.name)
+         setPrice(updatingProduct.price.toString())
+      }
+   }, [updatingProduct])
 
    const resetFields = () => {
       setName("")
       setPrice("")
+      setImage("")
+   }
+
+   const pickImage = async () => {
+      // No permissions request is necessary for launching the image library
+      let result = await ImagePicker.launchImageLibraryAsync({
+         mediaTypes: ImagePicker.MediaTypeOptions.Images,
+         allowsEditing: true,
+         aspect: [1, 1],
+         quality: 1,
+      })
+
+      if (!result.canceled) {
+         setImage(result.assets[0].uri)
+      }
+   }
+
+   const confirmDelete = () => {
+      Alert.alert("Confirm", "Are you sure you want to delete this product?", [
+         {
+            text: "Cancel",
+         },
+         {
+            text: "Delete",
+            style: "destructive",
+            onPress: onDeleteProduct,
+         },
+      ])
    }
 
    const validateInput = () => {
@@ -46,57 +100,56 @@ export default function CreateProductScreen() {
       return true
    }
 
-   const pickImage = async () => {
-      // No permissions request is necessary for launching the image library
-      let result = await ImagePicker.launchImageLibraryAsync({
-         mediaTypes: ImagePicker.MediaTypeOptions.Images,
-         allowsEditing: true,
-         aspect: [1, 1],
-         quality: 1,
-      })
-
-      console.log(result)
-
-      if (!result.canceled) {
-         setImage(result.assets[0].uri)
-      }
-   }
-
-   const onDeleteProduct = () => {
-      console.warn("DELETING!!!!")
-   }
-
-   const confirmDelete = () => {
-      Alert.alert("Confirm", "Are you sure you want to delete this product?", [
-         {
-            text: "Cancel",
-         },
-         {
-            text: "Delete",
-            style: "destructive",
-            onPress: onDeleteProduct,
-         },
-      ])
-   }
-
    const onSubmit = () => (isUpdating ? onUpdate() : onCreate())
 
    const onCreate = () => {
       if (!validateInput()) return
       console.log("creating")
 
-      // save in the database
+      insertProductMutation(
+         { name, image: image, price: parseFloat(price) },
+         {
+            onSuccess: () => {
+               resetFields()
+               router.back()
+               setError("")
+            },
+            onError: () => {
+               setError("something went wrong to create product!!")
+            },
+         }
+      )
+   }
 
-      resetFields()
+   const onDeleteProduct = () => {
+      deleteProductMutation(id, {
+         onSuccess: () => {
+            resetFields()
+            router.replace("/(admin)/menu")
+            setError("")
+         },
+         onError: () => {
+            setError("something went wrong to delete product!!")
+         },
+      })
    }
 
    const onUpdate = () => {
       if (!validateInput()) return
-      console.log("updating")
 
-      // save in the database
-
-      resetFields()
+      updateProductMutation(
+         { id, name, image, price: parseFloat(price) },
+         {
+            onSuccess: () => {
+               resetFields()
+               router.back()
+               setError("")
+            },
+            onError: () => {
+               setError("something went wrong to update product!!")
+            },
+         }
+      )
    }
 
    return (
@@ -133,13 +186,26 @@ export default function CreateProductScreen() {
          />
 
          <Text style={{ color: "red" }}>{error}</Text>
-         <Button text={isUpdating ? "Update" : "Create"} onPress={onSubmit} />
+         <Button
+            disabled={isInsertPending || isUpdatePending || isDeletePending}
+            text={
+               isUpdating
+                  ? isUpdatePending
+                     ? "Updating..."
+                     : "Update"
+                  : isInsertPending
+                  ? "Creating..."
+                  : "Create"
+            }
+            onPress={onSubmit}
+         />
          {isUpdating ? (
             <Text
+               disabled={isDeletePending}
                onPress={confirmDelete}
                style={[styles.selectImage, { color: "red" }]}
             >
-               Delete Product
+               {isDeletePending ? "Deleting Product" : "Delete Product"}
             </Text>
          ) : null}
       </ScrollView>

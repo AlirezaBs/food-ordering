@@ -1,23 +1,30 @@
-import products from "@/assets/data/products"
+import { useProduct } from "@/src/api/products"
 import { defaultPizaImage } from "@/src/components/ProductListItem"
 import Button from "@/src/components/button"
 import { useCartContext } from "@/src/providers/cartProvider"
 import { PizzaSize } from "@/src/types"
 import { Stack, useLocalSearchParams, useRouter } from "expo-router"
 import React, { useState } from "react"
-import { Image, Pressable, StyleSheet, Text, View } from "react-native"
+import {
+   ActivityIndicator,
+   Image,
+   Pressable,
+   StyleSheet,
+   Text,
+   View,
+} from "react-native"
 
 const SIZES: PizzaSize[] = ["S", "M", "L", "XL"]
 
 export default function ProductDetailScreen() {
-   const { id } = useLocalSearchParams()
+   const { id: idString } = useLocalSearchParams()
+   const id = parseFloat(typeof idString === "string" ? idString : idString[0])
    const { onAddItem } = useCartContext()
    const router = useRouter()
 
    const [selectedSize, setSelectedSize] = useState<PizzaSize>("M")
 
-   const product = products.find((product) => product.id.toString() === id)
-   if (!product) return <Text>Product not found!</Text>
+   const { data: product, error, isLoading } = useProduct(id)
 
    const addToCart = () => {
       if (!product) return
@@ -25,14 +32,22 @@ export default function ProductDetailScreen() {
       router.push("/cart")
    }
 
+   if (isLoading) {
+      return <ActivityIndicator />
+   }
+
+   if (error) {
+      return <Text>failed to load data</Text>
+   }
+
    return (
       <View style={styles.container}>
          <Stack.Screen options={{ title: product?.name }} />
 
          <Image
-            source={{ uri: product.image || defaultPizaImage }}
+            source={{ uri: product?.image || defaultPizaImage }}
             style={styles.image}
-            alt={product.name + "image"}
+            alt={product?.name + "image"}
             resizeMode="contain"
          />
 
@@ -64,7 +79,7 @@ export default function ProductDetailScreen() {
             ))}
          </View>
 
-         <Text style={styles.price}>${product.price}</Text>
+         <Text style={styles.price}>${product?.price}</Text>
          <Button onPress={addToCart} text="Add to Cart" />
       </View>
    )

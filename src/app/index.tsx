@@ -13,15 +13,15 @@ const index = () => {
    if (!session) return <Redirect href={"/(auth)/sign-in"} />
 
    if (!isAdmin) {
-      return <Redirect href={"/(user)"} />
+      return <Redirect href={"/(user)/menu"} />
    }
 
    return (
       <View style={{ flex: 1, justifyContent: "center", padding: 10 }}>
-         <Link href={"/(user)"} asChild push>
+         <Link href={"/(user)/menu"} asChild push>
             <Button text="User" />
          </Link>
-         <Link href={"/(admin)"} asChild push>
+         <Link href={"/(admin)/menu"} asChild push>
             <Button text="Admin" />
          </Link>
 

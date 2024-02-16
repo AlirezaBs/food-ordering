@@ -32,11 +32,8 @@ export default function TabLayout() {
                backgroundColor: Colors.light.tint,
             },
          }}
+         initialRouteName="menu"
       >
-         <Tabs.Screen
-            name="index"
-            options={{ href: null, headerShown: false }}
-         />
          <Tabs.Screen
             name="menu"
             options={{
