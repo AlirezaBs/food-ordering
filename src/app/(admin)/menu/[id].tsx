@@ -1,11 +1,10 @@
 import { useProduct } from "@/src/api/products"
 import { defaultPizaImage } from "@/src/components/ProductListItem"
 import Colors from "@/src/constants/Colors"
-import { useCartContext } from "@/src/providers/cartProvider"
 import { PizzaSize } from "@/src/types"
 import { FontAwesome } from "@expo/vector-icons"
-import { Link, Stack, useLocalSearchParams, useRouter } from "expo-router"
-import React, { useState } from "react"
+import { Link, Stack, useLocalSearchParams } from "expo-router"
+import React from "react"
 import {
    ActivityIndicator,
    Image,
@@ -20,18 +19,8 @@ const SIZES: PizzaSize[] = ["S", "M", "L", "XL"]
 export default function ProductDetailScreen() {
    const { id: idString } = useLocalSearchParams()
    const id = parseFloat(typeof idString === "string" ? idString : idString[0])
-   const { onAddItem } = useCartContext()
-   const router = useRouter()
-
-   const [selectedSize, setSelectedSize] = useState<PizzaSize>("M")
 
    const { data: product, error, isLoading } = useProduct(id)
-
-   const addToCart = () => {
-      if (!product) return
-      onAddItem(product, selectedSize)
-      router.push("/cart")
-   }
 
    if (isLoading) {
       return <ActivityIndicator />

@@ -1,10 +1,13 @@
 import { randomUUID } from "expo-crypto"
 import { PropsWithChildren, createContext, useContext, useState } from "react"
-import { CartItem, PizzaSize, Product } from "../types"
+import { Tables } from "../database.types"
+import { CartItem, PizzaSize } from "../types"
+
+type Product = Tables<"products">
 
 interface CartContextType {
    items: CartItem[]
-   onAddItem: (item: Product, pizzaSize: PizzaSize) => void
+   onAddItem: (item: Product, pizzaSize: CartItem["size"]) => void
    updateQuantity: (itemId: string, amount: -1 | 1) => void
    total: number
 }

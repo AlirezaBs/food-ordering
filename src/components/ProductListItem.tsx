@@ -2,13 +2,13 @@ import { Text } from "@/src/components/Themed"
 import Colors from "@/src/constants/Colors"
 import { Link, useSegments } from "expo-router"
 import { Image, Pressable, StyleSheet } from "react-native"
-import { Product } from "../types"
+import { Tables } from "../types"
 
 export const defaultPizaImage =
    "https://notjustdev-dummy.s3.us-east-2.amazonaws.com/food/default.png"
 
 interface Props {
-   product: Product
+   product: Tables<"products">
 }
 
 export default function ProductLisstItem({ product }: Props) {

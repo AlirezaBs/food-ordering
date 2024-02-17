@@ -1,5 +1,4 @@
 import { supabase } from "@/src/lib/supabase"
-import { Product } from "@/src/types"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 
 export const useProductList = () => {
@@ -10,7 +9,7 @@ export const useProductList = () => {
 
          if (error) throw new Error(error.message)
 
-         return data as Product[]
+         return data
       },
    })
 }
@@ -27,7 +26,7 @@ export const useProduct = (id: number) => {
 
          if (error) throw new Error(error.message)
 
-         return data as Product
+         return data
       },
    })
 }
