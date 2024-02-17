@@ -6,6 +6,7 @@ import {
    useEffect,
    useState,
 } from "react"
+import { Tables } from "../database.types"
 import { supabase } from "../lib/supabase"
 
 interface AuthData {
@@ -33,7 +34,7 @@ export const useAuthContext = (): AuthData => {
 
 export default function AuthProvider({ children }: PropsWithChildren) {
    const [session, setSession] = useState<Session | null>(null)
-   const [profile, setProfile] = useState<any>(null)
+   const [profile, setProfile] = useState<Tables<'profiles'> | null>(null)
    const [loading, setLoading] = useState(true)
 
    useEffect(() => {
